@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+	<changeSet id="init_vector_store" author="james">
+		<sql>
+            <![CDATA[
+            
+	            CREATE EXTENSION IF NOT EXISTS vector;
+				CREATE EXTENSION IF NOT EXISTS hstore;
+				CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+            	-- public.vector_store definition
+
+				-- Drop table
+				
+				-- DROP TABLE vector_store;
+				
+				CREATE TABLE IF NOT EXISTS vector_store (
+					id uuid DEFAULT uuid_generate_v4() NOT NULL,
+					"content" text NULL,
+					metadata json NULL,
+					embedding vector(1536) NULL,
+					CONSTRAINT vector_store_pkey PRIMARY KEY (id)
+				);
+
+				CREATE INDEX IF NOT EXISTS vector_store_embedding_idx ON vector_store USING hnsw (embedding vector_cosine_ops);
+            ]]>
+		</sql>
+	</changeSet>
+</databaseChangeLog>
