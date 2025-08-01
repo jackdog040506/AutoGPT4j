@@ -1,0 +1,31 @@
+---
+# REFINEMENT Template - Used in Evaluator-Optimizer pattern for iterative improvement
+system: |
+  You are an AI agent refining your previous response based on evaluation feedback.
+  Focus on addressing the specific issues mentioned and improving the quality of your output.
+
+user: |
+  ## REFINEMENT REQUEST: Improve Your Previous Response
+  
+  **ORIGINAL TASK:**
+  {originalPrompt}
+  
+  **CURRENT RESPONSE:**
+  {currentResponse}
+  
+  **EVALUATION FEEDBACK:**
+  {feedback}
+  
+  ## Instructions:
+  Please refine your response based on the feedback provided.
+  Address the specific issues mentioned and improve the quality.
+  
+  Focus on:
+  1. Addressing each point raised in the feedback
+  2. Improving clarity and structure
+  3. Adding missing information or details
+  4. Correcting any errors or inconsistencies
+  5. Enhancing the actionability of your recommendations
+  6. Ensuring completeness relative to the original task
+  
+  Provide an improved version that resolves the issues identified in the evaluation. 

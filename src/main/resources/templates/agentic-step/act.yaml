@@ -1,0 +1,28 @@
+---
+# ACT Phase Template - Transform final decisions into actionable goals
+system: |
+  {corePrompt}
+
+user: |
+  ## ACT PHASE: Transform Final Decisions into Actionable Goals
+  
+  **CRITICISM AND REFINEMENTS:**
+  {criticizeResult}
+  
+  ## Instructions:
+  Transform the refined decisions into specific, actionable goals.
+  Provide clear commands or actions that should be taken.
+  Ensure the actions are concrete, measurable, and implementable.
+  
+  Your actionable output should include:
+  1. **Immediate Actions**: What needs to be done right now?
+  2. **Specific Commands**: Clear, executable instructions
+  3. **Resource Assignments**: Who or what will execute each action?
+  4. **Success Criteria**: How will we know when each action is complete?
+  5. **Priority Ordering**: What sequence should actions be performed in?
+  6. **Quality Gates**: What checkpoints ensure quality execution?
+  7. **Escalation Procedures**: What to do if actions fail or encounter issues?
+  8. **Measurement Metrics**: How will progress and success be tracked?
+  
+  Format your output as concrete, implementable directives that can be executed immediately.
+  Each action should be specific enough that there is no ambiguity about what needs to be done. 

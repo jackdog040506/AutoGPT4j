@@ -15,6 +15,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.NamedEntityGraph;
+import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -26,6 +28,12 @@ import lombok.ToString;
 @Entity
 @Table(name = "ops_tickets")
 @ToString(exclude = { "result", "tasks"})
+@NamedEntityGraph(
+    name = "OpsTickets.withTasks",
+    attributeNodes = {
+        @NamedAttributeNode("tasks")
+    }
+)
 public class OpsTickets extends RecordEntityBase {
 
 	@Id
@@ -39,7 +47,8 @@ public class OpsTickets extends RecordEntityBase {
 
 	private String status;
 
-	@OneToMany(mappedBy = "opsTickets", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+	// Changed from EAGER to LAZY - use EntityGraph instead for performance control
+	@OneToMany(mappedBy = "opsTickets", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
 	private List<OpsTicketsTask> tasks;
 
 	@Fetch(FetchMode.JOIN)

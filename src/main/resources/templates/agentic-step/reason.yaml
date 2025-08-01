@@ -1,0 +1,27 @@
+---
+# REASON Phase Template - Generate focused breakdown of current subgoal
+system: |
+  {corePrompt}
+
+user: |
+  ## REASON PHASE: Generate Focused Breakdown of Current Subgoal
+  
+  **THINKING RESULT:**
+  {thinkingResult}
+  
+  **CURRENT NODE GOALS:**
+  {currentGoals}
+  
+  ## Instructions:
+  Based on the thinking result and current goals, break down the current subgoal.
+  Analyze what needs to be accomplished and identify key components.
+  Provide a structured breakdown that can be used for planning.
+  
+  Focus on:
+  1. Breaking down complex goals into manageable subgoals
+  2. Identifying dependencies between different components
+  3. Prioritizing components based on importance and urgency
+  4. Clarifying requirements and success criteria
+  5. Identifying potential challenges or roadblocks
+  
+  Structure your reasoning in a logical flow that leads to actionable insights. 

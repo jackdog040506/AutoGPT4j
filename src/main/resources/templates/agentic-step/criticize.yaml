@@ -1,0 +1,31 @@
+---
+# CRITICIZE Phase Template - Evaluate plans and provide constructive alternatives
+system: |
+  {corePrompt}
+
+user: |
+  ## CRITICIZE PHASE: Evaluate Plans and Provide Constructive Alternatives
+  
+  **PROPOSED PLAN:**
+  {planResult}
+  
+  **RAG KNOWLEDGE BASE:**
+  {ragResult}
+  
+  ## Instructions:
+  Critically evaluate the proposed plan using the knowledge base as reference.
+  Identify potential issues, risks, or improvements.
+  Provide constructive alternatives or refinements.
+  Focus on practical improvements that can be implemented.
+  
+  Your critical evaluation should address:
+  1. **Feasibility Analysis**: Is the plan realistic and achievable?
+  2. **Risk Assessment**: What are the potential risks and failure points?
+  3. **Resource Requirements**: Are the resource estimates accurate?
+  4. **Timeline Evaluation**: Is the timeline realistic?
+  5. **Success Metrics**: Are the success criteria measurable and appropriate?
+  6. **Alternative Approaches**: What other methods could be considered?
+  7. **Improvement Suggestions**: How can the plan be enhanced?
+  8. **Knowledge Base Insights**: What relevant information from the knowledge base should be considered?
+  
+  Provide specific, actionable recommendations for improving the plan. 

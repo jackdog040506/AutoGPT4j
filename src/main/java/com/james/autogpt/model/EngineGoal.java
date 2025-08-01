@@ -13,6 +13,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedEntityGraph;
+import jakarta.persistence.NamedEntityGraphs;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedSubgraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -22,6 +26,60 @@ import lombok.EqualsAndHashCode;
 @Table(name = "engine_goal")
 @Data
 @EqualsAndHashCode(callSuper = true)
+@NamedEntityGraphs({
+    @NamedEntityGraph(
+        name = "EngineGoal.withExecutions",
+        attributeNodes = {
+            @NamedAttributeNode(value = "executions", subgraph = "executions-with-agent")
+        },
+        subgraphs = {
+            @NamedSubgraph(
+                name = "executions-with-agent",
+                attributeNodes = {
+                    @NamedAttributeNode("agent")
+                }
+            )
+        }
+    ),
+    @NamedEntityGraph(
+        name = "EngineGoal.withTaskNode",
+        attributeNodes = {
+            @NamedAttributeNode(value = "taskNode", subgraph = "taskNode-basic")
+        },
+        subgraphs = {
+            @NamedSubgraph(
+                name = "taskNode-basic",
+                attributeNodes = {
+                    @NamedAttributeNode("taskNodeMaster"),
+                    @NamedAttributeNode("parentTask")
+                }
+            )
+        }
+    ),
+    @NamedEntityGraph(
+        name = "EngineGoal.complete",
+        attributeNodes = {
+            @NamedAttributeNode(value = "executions", subgraph = "executions-complete"),
+            @NamedAttributeNode(value = "taskNode", subgraph = "taskNode-complete")
+        },
+        subgraphs = {
+            @NamedSubgraph(
+                name = "executions-complete",
+                attributeNodes = {
+                    @NamedAttributeNode("agent")
+                }
+            ),
+            @NamedSubgraph(
+                name = "taskNode-complete",
+                attributeNodes = {
+                    @NamedAttributeNode("taskNodeMaster"),
+                    @NamedAttributeNode("parentTask"),
+                    @NamedAttributeNode("subTasks")
+                }
+            )
+        }
+    )
+})
 public class EngineGoal extends EntityBase {
 
 	@Column(nullable = false)

@@ -1,0 +1,33 @@
+---
+# PLAN Phase Template - Decide on subgoals or next goal for current node
+system: |
+  {corePrompt}
+
+user: |
+  ## PLAN PHASE: Decide on Subgoals or Next Goal for Current Node
+  
+  **THINKING RESULT:**
+  {thinkingResult}
+  
+  **REASONING RESULT:**
+  {reasoningResult}
+  
+  **AVAILABLE AGENT OPTIONS:**
+  {agentOptions}
+  
+  ## Instructions:
+  Based on the thinking and reasoning, create a plan for the next steps.
+  Decide on subgoals or the next goal for the current node.
+  Consider the available agent options and choose the best approach.
+  Provide a detailed action plan with clear steps and priorities.
+  
+  Your plan should include:
+  1. Specific subgoals or next immediate goal
+  2. Step-by-step action items with clear priorities
+  3. Resource allocation and agent assignments
+  4. Timeline and milestones
+  5. Success criteria and metrics
+  6. Risk mitigation strategies
+  7. Alternative approaches if the primary plan fails
+  
+  Ensure the plan is realistic, achievable, and aligns with the overall objectives. 

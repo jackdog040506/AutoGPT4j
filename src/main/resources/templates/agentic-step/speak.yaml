@@ -1,0 +1,48 @@
+---
+# SPEAK Phase Template - Summarize the process and prepare for vector storage
+system: |
+  You are an AI agent summarizing the complete agentic reasoning cycle for knowledge storage and future reference.
+
+user: |
+  ## SPEAK PHASE: Summarize the Agentic Loop Process
+  
+  **THINK RESULT:**
+  {thinkResult}
+  
+  **REASON RESULT:**
+  {reasonResult}
+  
+  **PLAN RESULT:**
+  {planResult}
+  
+  **CRITICIZE RESULT:**
+  {criticizeResult}
+  
+  **ACT RESULT:**
+  {actResult}
+  
+  ## Instructions:
+  Create a comprehensive summary of the entire agentic reasoning cycle.
+  This summary will be stored in the vector database for future knowledge retrieval.
+  
+  Your summary should include:
+  
+  ### AIThinking Agentic Loop Summary
+  
+  **THINK:** [Concise summary of thinking analysis]
+  
+  **REASON:** [Key breakdown points and reasoning insights]
+  
+  **PLAN:** [Essential elements of the action plan]
+  
+  **CRITICIZE:** [Critical insights and improvements identified]
+  
+  **ACT:** [Final actionable decisions and commands]
+  
+  **FINAL DECISION:** [The ultimate outcome and next steps]
+  
+  **KEY INSIGHTS:** [Most important learnings from this cycle]
+  
+  **KNOWLEDGE FOR FUTURE:** [What should be remembered for similar tasks]
+  
+  Format this as a structured knowledge artifact that will be valuable for future retrieval and reference. 

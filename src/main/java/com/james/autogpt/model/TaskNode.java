@@ -10,6 +10,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedEntityGraph;
+import jakarta.persistence.NamedEntityGraphs;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedSubgraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
@@ -20,6 +24,52 @@ import lombok.EqualsAndHashCode;
 @Table(name = "task_node")
 @Data
 @EqualsAndHashCode(callSuper = true)
+@NamedEntityGraphs({
+    @NamedEntityGraph(
+        name = "TaskNode.withSubTasks",
+        attributeNodes = {
+            @NamedAttributeNode("subTasks"),
+            @NamedAttributeNode("parentTask")
+        }
+    ),
+    @NamedEntityGraph(
+        name = "TaskNode.withGoals",
+        attributeNodes = {
+            @NamedAttributeNode(value = "goals", subgraph = "goals-subgraph")
+        },
+        subgraphs = {
+            @NamedSubgraph(
+                name = "goals-subgraph",
+                attributeNodes = {
+                    @NamedAttributeNode("executions")
+                }
+            )
+        }
+    ),
+    @NamedEntityGraph(
+        name = "TaskNode.complete",
+        attributeNodes = {
+            @NamedAttributeNode("subTasks"),
+            @NamedAttributeNode("parentTask"),
+            @NamedAttributeNode(value = "goals", subgraph = "goals-with-executions"),
+            @NamedAttributeNode("taskNodeMaster")
+        },
+        subgraphs = {
+            @NamedSubgraph(
+                name = "goals-with-executions",
+                attributeNodes = {
+                    @NamedAttributeNode(value = "executions", subgraph = "executions-with-agent")
+                }
+            ),
+            @NamedSubgraph(
+                name = "executions-with-agent",
+                attributeNodes = {
+                    @NamedAttributeNode("agent")
+                }
+            )
+        }
+    )
+})
 public class TaskNode extends EntityBase {
     
     @Column(nullable = false)
