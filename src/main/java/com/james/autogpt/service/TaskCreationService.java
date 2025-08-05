@@ -1,16 +1,24 @@
 package com.james.autogpt.service;
 
-import com.james.autogpt.dto.scopes.AgentType;
-import com.james.autogpt.dto.scopes.EngineGoalStatus;
-import com.james.autogpt.dto.scopes.ExecutionStatus;
-import com.james.autogpt.model.*;
-import com.james.autogpt.repository.*;
-import lombok.extern.slf4j.Slf4j;
+import java.util.HashMap;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
+import com.james.autogpt.dto.scopes.AgentType;
+import com.james.autogpt.dto.scopes.EngineGoalStatus;
+import com.james.autogpt.dto.scopes.ExecutionStatus;
+import com.james.autogpt.model.Agent;
+import com.james.autogpt.model.EngineExecution;
+import com.james.autogpt.model.EngineGoal;
+import com.james.autogpt.model.TaskNode;
+import com.james.autogpt.repository.AgentRepository;
+import com.james.autogpt.repository.EngineExecutionRepository;
+import com.james.autogpt.repository.EngineGoalRepository;
+import com.james.autogpt.repository.TaskNodeRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Service for programmatically creating tasks, goals, and executions
@@ -20,19 +28,19 @@ import java.util.HashMap;
 @Service
 @Transactional
 public class TaskCreationService {
-    
+
     @Autowired
     private TaskNodeRepository taskNodeRepository;
-    
+
     @Autowired
     private EngineGoalRepository engineGoalRepository;
-    
+
     @Autowired
     private EngineExecutionRepository engineExecutionRepository;
-    
+
     @Autowired
     private AgentRepository agentRepository;
-    
+
     /**
      * Create a child TaskNode for branching operations
      */
@@ -44,17 +52,17 @@ public class TaskCreationService {
         childTask.setPriority(priority);
         childTask.setParentTask(parent);
         childTask.setTaskNodeMaster(parent.getTaskNodeMaster());
-        
+
         TaskNode savedChild = taskNodeRepository.save(childTask);
-        
+
         // Add to parent's subtasks
         parent.getSubTasks().add(savedChild);
         taskNodeRepository.save(parent);
-        
+
         log.debug("Created child TaskNode {} for parent {}", savedChild.getId(), parent.getId());
         return savedChild;
     }
-    
+
     /**
      * Create an AIThinking goal for the given TaskNode
      */
@@ -64,7 +72,7 @@ public class TaskCreationService {
         if (aiThinkingAgent == null) {
             throw new IllegalStateException("No AIThinking agent found in the system");
         }
-        
+
         // Create goal
         EngineGoal goal = new EngineGoal();
         goal.setName("AIThinking for: " + taskNode.getName());
@@ -72,31 +80,31 @@ public class TaskCreationService {
         goal.setPriority(taskNode.getPriority());
         goal.setStatus(EngineGoalStatus.PENDING);
         goal.setTaskNode(taskNode);
-        
+
         EngineGoal savedGoal = engineGoalRepository.save(goal);
-        
+
         // Create execution
         EngineExecution execution = new EngineExecution();
         execution.setAgent(aiThinkingAgent);
         execution.setStatus(ExecutionStatus.STALLED);
         execution.setGoal(savedGoal);
         execution.setConfig(new HashMap<>());
-        
+
         EngineExecution savedExecution = engineExecutionRepository.save(execution);
-        
+
         // Establish relationships
         savedGoal.addExecution(savedExecution);
         taskNode.getGoals().add(savedGoal);
-        
+
         engineGoalRepository.save(savedGoal);
         taskNodeRepository.save(taskNode);
-        
-        log.debug("Created AIThinking goal {} and execution {} for TaskNode {}", 
+
+        log.debug("Created AIThinking goal {} and execution {} for TaskNode {}",
             savedGoal.getId(), savedExecution.getId(), taskNode.getId());
-        
+
         return savedGoal;
     }
-    
+
     /**
      * Create an AIGot goal for Graph of Thought reasoning
      */
@@ -106,7 +114,7 @@ public class TaskCreationService {
         if (aiGotAgent == null) {
             throw new IllegalStateException("No AIGot agent found in the system");
         }
-        
+
         // Create goal
         EngineGoal goal = new EngineGoal();
         goal.setName("AIGot for: " + taskNode.getName());
@@ -114,31 +122,31 @@ public class TaskCreationService {
         goal.setPriority(taskNode.getPriority());
         goal.setStatus(EngineGoalStatus.PENDING);
         goal.setTaskNode(taskNode);
-        
+
         EngineGoal savedGoal = engineGoalRepository.save(goal);
-        
+
         // Create execution with reasoning action
         EngineExecution execution = new EngineExecution();
         execution.setAgent(aiGotAgent);
         execution.setStatus(ExecutionStatus.STALLED);
         execution.setGoal(savedGoal);
-        
+
         HashMap<String, Object> config = new HashMap<>();
         config.put("reasoningAction", reasoningAction);
         execution.setConfig(config);
-        
+
         EngineExecution savedExecution = engineExecutionRepository.save(execution);
-        
+
         // Establish relationships
         savedGoal.addExecution(savedExecution);
         taskNode.getGoals().add(savedGoal);
-        
+
         engineGoalRepository.save(savedGoal);
         taskNodeRepository.save(taskNode);
-        
-        log.debug("Created AIGot goal {} with action {} and execution {} for TaskNode {}", 
+
+        log.debug("Created AIGot goal {} with action {} and execution {} for TaskNode {}",
             savedGoal.getId(), reasoningAction, savedExecution.getId(), taskNode.getId());
-        
+
         return savedGoal;
     }
-} 
+}

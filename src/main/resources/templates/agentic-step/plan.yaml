@@ -1,8 +1,4 @@
 ---
-# PLAN Phase Template - Decide on subgoals or next goal for current node
-system: |
-  {corePrompt}
-
 user: |
   ## PLAN PHASE: Decide on Subgoals or Next Goal for Current Node
   
@@ -20,7 +16,9 @@ user: |
   Decide on subgoals or the next goal for the current node.
   Consider the available agent options and choose the best approach.
   Provide a detailed action plan with clear steps and priorities.
-  
+  If the goal is very complex, make it clustering by first level.
+  Subgoals creation must choose agent with type "AIGot".
+
   Your plan should include:
   1. Specific subgoals or next immediate goal
   2. Step-by-step action items with clear priorities
@@ -29,5 +27,6 @@ user: |
   5. Success criteria and metrics
   6. Risk mitigation strategies
   7. Alternative approaches if the primary plan fails
+  8. (temporary) Don't generate next goal for now, just generate the subgoals for current node.
   
   Ensure the plan is realistic, achievable, and aligns with the overall objectives. 

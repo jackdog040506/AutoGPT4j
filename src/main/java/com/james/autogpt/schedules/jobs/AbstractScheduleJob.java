@@ -36,7 +36,7 @@ public abstract class AbstractScheduleJob implements Job {
 				.entrySet()
 				.forEach(entry -> runningStatement
 						.append(logger(), "[%s]%s:%s", currentScheduleId, entry.getKey(), entry.getValue()));
-		
+
 		OpsScheduleExecuteResult opsScheduleExecuteResult = new OpsScheduleExecuteResult();
 		opsScheduleExecuteResult.setScheduleId(context.getJobDetail().getKey().getName());
 		opsScheduleExecuteResult.setGroupId(context.getJobDetail().getKey().getGroup());

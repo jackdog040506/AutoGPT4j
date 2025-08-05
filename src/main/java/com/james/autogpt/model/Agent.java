@@ -15,11 +15,11 @@ import lombok.Data;
 public class Agent {
 	@Id
 	private String agentId;
-	
+
 	private String roles; // comma-separated roles
 	private String focus;
 	private String personality;
-	
+
 	@Enumerated(EnumType.STRING)
 	private AgentType agentType; //
 }

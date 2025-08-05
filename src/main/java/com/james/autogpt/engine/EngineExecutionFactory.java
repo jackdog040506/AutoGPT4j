@@ -1,16 +1,16 @@
 package com.james.autogpt.engine;
 
-import com.james.autogpt.dto.scopes.AgentType;
-import com.james.autogpt.engine.processors.ExecutionProcessor;
-import com.james.autogpt.model.EngineExecution;
-import lombok.extern.slf4j.Slf4j;
+import java.util.EnumMap;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.james.autogpt.dto.scopes.AgentType;
+import com.james.autogpt.engine.processors.ExecutionProcessor;
+import com.james.autogpt.model.EngineExecution;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Factory that processes EngineExecution input and delegates to appropriate
@@ -37,7 +37,7 @@ public class EngineExecutionFactory {
     /**
      * Process an EngineExecution by delegating to the appropriate processor
      * based on the Agent's type
-     * 
+     *
      * @param execution The EngineExecution to process
      * @return ExecutionResult containing the outcome and any follow-up actions
      */

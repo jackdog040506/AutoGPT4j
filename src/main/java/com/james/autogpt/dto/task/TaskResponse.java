@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class TaskResponse {
-    
+
     private String masterNodeId;
     private String rootTaskNodeId;
     private String engineGoalId;
@@ -17,8 +17,8 @@ public class TaskResponse {
     private String agentId;
     private String agentType;
     private LocalDateTime createdAt;
-    
-    public static TaskResponse fromTaskNodeMaster(String masterNodeId, String rootTaskNodeId, 
+
+    public static TaskResponse fromTaskNodeMaster(String masterNodeId, String rootTaskNodeId,
                                                String engineGoalId, String engineExecutionId,
                                                String conversationId, String name, String description,
                                                String agentId, String agentType, LocalDateTime createdAt) {
@@ -35,4 +35,4 @@ public class TaskResponse {
         response.setCreatedAt(createdAt);
         return response;
     }
-} 
+}

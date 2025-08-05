@@ -19,7 +19,7 @@ public class EntityBase {
 	@Id
 	@UuidGenerator
 	private String id;
-	
+
 	@LastModifiedDate
 	private LocalDateTime dateModified;
 

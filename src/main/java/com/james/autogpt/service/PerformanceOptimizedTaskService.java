@@ -1,20 +1,10 @@
 package com.james.autogpt.service;
 
-import com.james.autogpt.model.TaskNode;
-import com.james.autogpt.model.TaskNodeMaster;
-import com.james.autogpt.model.EngineGoal;
-import com.james.autogpt.model.EngineExecution;
-import com.james.autogpt.repository.TaskNodeRepository;
-import com.james.autogpt.repository.TaskNodeMasterRepository;
-import com.james.autogpt.repository.EngineGoalRepository;
-import com.james.autogpt.repository.EngineExecutionRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Demonstrates best practices for using EntityGraphs to optimize performance
@@ -36,7 +26,7 @@ public class PerformanceOptimizedTaskService {
 //     */
 //    public Optional<TaskNode> loadTaskNodeWithSubTasks(String conversationId) {
 //        log.debug("Loading TaskNode with subtasks for conversation: {}", conversationId);
-//        
+//
 //        // Single query loads TaskNode + subTasks + parentTask
 //        return taskNodeRepository.findWithSubTasksByConversationId(conversationId);
 //    }
@@ -46,7 +36,7 @@ public class PerformanceOptimizedTaskService {
 //     */
 //    public Optional<TaskNode> loadTaskNodeWithGoals(String conversationId) {
 //        log.debug("Loading TaskNode with goals for conversation: {}", conversationId);
-//        
+//
 //        // Single query loads TaskNode + goals + executions
 //        return taskNodeRepository.findWithGoalsByConversationId(conversationId);
 //    }
@@ -56,7 +46,7 @@ public class PerformanceOptimizedTaskService {
 //     */
 //    public Optional<TaskNode> loadCompleteTaskNode(String conversationId) {
 //        log.debug("Loading complete TaskNode for conversation: {}", conversationId);
-//        
+//
 //        // Single query loads TaskNode + subTasks + goals + executions + agents + taskNodeMaster
 //        return taskNodeRepository.findCompleteByConversationId(conversationId);
 //    }
@@ -66,7 +56,7 @@ public class PerformanceOptimizedTaskService {
 //     */
 //    public Optional<TaskNodeMaster> loadMasterWithTaskNodes(String conversationId) {
 //        log.debug("Loading TaskNodeMaster with task nodes for conversation: {}", conversationId);
-//        
+//
 //        // Single query loads TaskNodeMaster + taskNodes + rootTaskNode
 //        return taskNodeMasterRepository.findWithTaskNodesByConversationId(conversationId);
 //    }
@@ -76,7 +66,7 @@ public class PerformanceOptimizedTaskService {
 //     */
 //    public Optional<TaskNodeMaster> loadCompleteConversation(String conversationId) {
 //        log.debug("Loading complete conversation data for: {}", conversationId);
-//        
+//
 //        // Single query loads TaskNodeMaster + taskNodes + rootTaskNode + goals + subTasks
 //        return taskNodeMasterRepository.findCompleteByConversationId(conversationId);
 //    }
@@ -86,7 +76,7 @@ public class PerformanceOptimizedTaskService {
 //     */
 //    public List<EngineGoal> loadGoalsWithExecutions(String masterNodeId) {
 //        log.debug("Loading goals with executions for master node: {}", masterNodeId);
-//        
+//
 //        // Single query loads EngineGoals + executions + agents for the entire conversation
 //        return engineGoalRepository.findCompleteByTaskNodeMasterId(masterNodeId);
 //    }
@@ -96,7 +86,7 @@ public class PerformanceOptimizedTaskService {
 //     */
 //    public List<EngineExecution> loadExecutionsForConversation(String masterNodeId) {
 //        log.debug("Loading executions for conversation: {}", masterNodeId);
-//        
+//
 //        // Single query loads EngineExecutions + agents + goals for the entire conversation
 //        return engineExecutionRepository.findCompleteByTaskNodeMasterId(masterNodeId);
 //    }
@@ -106,9 +96,9 @@ public class PerformanceOptimizedTaskService {
 //     */
 //    public void demonstratePerformanceDifference(String conversationId) {
 //        log.info("=== Performance Comparison Demo ===");
-//        
+//
 //        long startTime = System.currentTimeMillis();
-//        
+//
 //        // BAD: This will cause N+1 queries
 //        TaskNode badExample = taskNodeRepository.findByConversationId(conversationId);
 //        if (badExample != null) {
@@ -117,11 +107,11 @@ public class PerformanceOptimizedTaskService {
 //            int goalCount = badExample.getGoals().size(); // Query 2 + N queries for each goal's executions
 //            log.warn("BAD: Loaded with {} subtasks, {} goals using N+1 queries", subTaskCount, goalCount);
 //        }
-//        
+//
 //        long badTime = System.currentTimeMillis() - startTime;
-//        
+//
 //        startTime = System.currentTimeMillis();
-//        
+//
 //        // GOOD: Single optimized query
 //        Optional<TaskNode> goodExample = taskNodeRepository.findCompleteByConversationId(conversationId);
 //        if (goodExample.isPresent()) {
@@ -131,10 +121,10 @@ public class PerformanceOptimizedTaskService {
 //            int goalCount = node.getGoals().size();
 //            log.info("GOOD: Loaded with {} subtasks, {} goals using single optimized query", subTaskCount, goalCount);
 //        }
-//        
+//
 //        long goodTime = System.currentTimeMillis() - startTime;
-//        
-//        log.info("Performance improvement: {}ms vs {}ms ({}x faster)", 
+//
+//        log.info("Performance improvement: {}ms vs {}ms ({}x faster)",
 //                badTime, goodTime, badTime > 0 ? (double)badTime/goodTime : "N/A");
 //    }
 //
@@ -151,4 +141,4 @@ public class PerformanceOptimizedTaskService {
 //        log.info("6. Always measure performance impact in your specific use cases");
 //        log.info("7. Consider pagination for large datasets even with EntityGraphs");
 //    }
-} 
+}

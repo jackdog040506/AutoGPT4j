@@ -18,7 +18,7 @@ public class OpsScheduleSettingsDto {
 
 	@JsonPropertyDescription("Identifier for the category of the schedule")
 	private String categoryId;
-	
+
 	@JsonPropertyDescription("Cron expression defining the schedule")
 	private String cron;
 

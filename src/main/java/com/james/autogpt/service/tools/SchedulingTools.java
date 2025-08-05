@@ -5,7 +5,6 @@ import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.james.autogpt.dto.OpsScheduleSettingsDto;
 import com.james.autogpt.dto.Result;
 import com.james.autogpt.dto.ResultList;

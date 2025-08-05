@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.james.autogpt.dto.OpsScheduleExecResultDto;
 import com.james.autogpt.dto.OpsScheduleSettingsDto;
 import com.james.autogpt.dto.Result;

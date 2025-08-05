@@ -40,7 +40,7 @@ public class TestController {
 		List<Document> documents = vectorStore.similaritySearch(searchRequest);
 		return documents; // top 5 matches
 	}
-	
+
 	@PostMapping("/sendMessage")
 	public void sendMessage(@RequestBody String message) {
         ChatMessage chatMessage = new ChatMessage();

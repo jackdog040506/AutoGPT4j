@@ -18,7 +18,7 @@ public class CreateTaskRequest {
     private String agentId; // Optional, if not provided will use AIPlanner
 
     private String masterPrompt;
-    
+
     private String rootPrompt;
 
     //parent task node id for sub task forking check

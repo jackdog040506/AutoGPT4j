@@ -5,7 +5,6 @@ import java.util.Set;
 
 import com.james.autogpt.dto.scopes.EngineGoalStatus;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,18 +12,20 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.NamedEntityGraphs;
-import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedSubgraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "engine_goal")
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode(callSuper = true)
 @NamedEntityGraphs({
     @NamedEntityGraph(

@@ -1,8 +1,4 @@
 ---
-# REASON Phase Template - Generate focused breakdown of current subgoal
-system: |
-  {corePrompt}
-
 user: |
   ## REASON PHASE: Generate Focused Breakdown of Current Subgoal
   

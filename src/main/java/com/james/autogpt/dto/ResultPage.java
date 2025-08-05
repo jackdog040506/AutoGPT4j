@@ -77,7 +77,7 @@ public class ResultPage<T> extends ResultList<T> {
 	public static <T> ResultPage<T> ofError(HttpStatus httpStatus, String message) {
 		return ofError(httpStatus.value(), message);
 	}
-	
+
 	public static <T> ResultPage<T> ofErrorCode(int code, String messageCode, Object... args) {
 		ResultPage<T> result = new ResultPage<>();
 		result.setCode(code);

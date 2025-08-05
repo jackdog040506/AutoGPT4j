@@ -1,30 +1,23 @@
 package com.james.autogpt.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
-import org.springframework.ai.chat.model.ChatResponse;
-import org.springframework.ai.chat.model.Generation;
-import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.chat.prompt.PromptTemplate;
-import org.springframework.ai.converter.BeanOutputConverter;
-import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
-import org.springframework.ai.vectorstore.SearchRequest;
-import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
+import com.james.autogpt.dto.Result;
+import com.james.autogpt.dto.agent.AgentResponse;
+import com.james.autogpt.dto.agent.CreateAgentRequest;
+import com.james.autogpt.dto.agent.UpdateAgentRequest;
+import com.james.autogpt.dto.scopes.AgentType;
+import com.james.autogpt.model.Agent;
+import com.james.autogpt.repository.AgentRepository;
 import com.james.autogpt.service.tools.SchedulingTools;
-import com.james.autogpt.utils.Constants;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,10 +29,132 @@ public class AgentService {
 //	private final VectorStore vectorStore;
 	private final SchedulingTools schedulingTools;
 	private final VectorStore vectorStore;
+	private final AgentRepository agentRepository;
 
 	@Autowired
 	public void setChatClientBuilder(ChatClient.Builder chatClientBuilder) {
 		this.chatClient = chatClientBuilder.build();
+	}
+
+	// CRUD Operations for Agent
+
+	/**
+	 * Create a new agent
+	 */
+	public Result<AgentResponse> createAgent(CreateAgentRequest request) {
+		try {
+			// Check if agent already exists
+			if (agentRepository.existsById(request.getAgentId())) {
+				return Result.ofError(400, "Agent with ID " + request.getAgentId() + " already exists");
+			}
+
+			Agent agent = new Agent();
+			agent.setAgentId(request.getAgentId());
+			agent.setRoles(request.getRoles());
+			agent.setFocus(request.getFocus());
+			agent.setPersonality(request.getPersonality());
+			agent.setAgentType(request.getAgentType());
+
+			Agent savedAgent = agentRepository.save(agent);
+			return Result.ofSuccess(AgentResponse.fromAgent(savedAgent));
+		} catch (Exception e) {
+			return Result.ofError(500, "Failed to create agent: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Get agent by ID
+	 */
+	public Result<AgentResponse> getAgentById(String agentId) {
+		try {
+			Optional<Agent> agent = agentRepository.findById(agentId);
+			if (agent.isPresent()) {
+				return Result.ofSuccess(AgentResponse.fromAgent(agent.get()));
+			}
+			return Result.ofError(404, "Agent not found with ID: " + agentId);
+		} catch (Exception e) {
+			return Result.ofError(500, "Failed to retrieve agent: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Get all agents
+	 */
+	public Result<List<AgentResponse>> getAllAgents() {
+		try {
+			List<AgentResponse> agents = agentRepository.findAll()
+					.stream()
+					.map(AgentResponse::fromAgent)
+					.collect(Collectors.toList());
+			return Result.ofSuccess(agents);
+		} catch (Exception e) {
+			return Result.ofError(500, "Failed to retrieve agents: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Get agents by type
+	 */
+	public Result<List<AgentResponse>> getAgentsByType(AgentType agentType) {
+		try {
+			List<AgentResponse> agents = agentRepository.findAll()
+					.stream()
+					.filter(agent -> agent.getAgentType() == agentType)
+					.map(AgentResponse::fromAgent)
+					.collect(Collectors.toList());
+			return Result.ofSuccess(agents);
+		} catch (Exception e) {
+			return Result.ofError(500, "Failed to retrieve agents by type: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Update agent
+	 */
+	public Result<AgentResponse> updateAgent(String agentId, UpdateAgentRequest request) {
+		try {
+			Optional<Agent> existingAgent = agentRepository.findById(agentId);
+			if (existingAgent.isEmpty()) {
+				return Result.ofError(404, "Agent not found with ID: " + agentId);
+			}
+
+			Agent agent = existingAgent.get();
+
+			// Update only non-null fields
+			if (request.getRoles() != null) {
+				agent.setRoles(request.getRoles());
+			}
+			if (request.getFocus() != null) {
+				agent.setFocus(request.getFocus());
+			}
+			if (request.getPersonality() != null) {
+				agent.setPersonality(request.getPersonality());
+			}
+			if (request.getAgentType() != null) {
+				agent.setAgentType(request.getAgentType());
+			}
+
+			Agent updatedAgent = agentRepository.save(agent);
+			return Result.ofSuccess(AgentResponse.fromAgent(updatedAgent));
+		} catch (Exception e) {
+			return Result.ofError(500, "Failed to update agent: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Delete agent
+	 */
+	public Result<String> deleteAgent(String agentId) {
+		try {
+			if (!agentRepository.existsById(agentId)) {
+				return Result.ofError(404, "Agent not found with ID: " + agentId);
+			}
+
+			agentRepository.deleteById(agentId);
+			return Result.ofSuccess("Agent deleted successfully");
+		} catch (Exception e) {
+			return Result.ofError(500, "Failed to delete agent: " + e.getMessage());
+		}
 	}
 
 	// Add events to vector store (memory)

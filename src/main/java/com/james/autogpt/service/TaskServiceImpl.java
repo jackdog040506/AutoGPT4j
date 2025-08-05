@@ -1,6 +1,8 @@
 package com.james.autogpt.service;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,39 +36,64 @@ public class TaskServiceImpl implements TaskService {
 
     @Autowired
     private TaskNodeMasterRepository taskNodeMasterRepository;
-    
+
     @Autowired
     private TaskNodeRepository taskNodeRepository;
-    
+
     @Autowired
     private EngineGoalRepository engineGoalRepository;
-    
+
     @Autowired
     private EngineExecutionRepository engineExecutionRepository;
-    
+
     @Autowired
     private AgentRepository agentRepository;
 
     @Override
     public Result<TaskResponse> createMasterNodeWithAIPlannerGoal(CreateAIPlannerTaskRequest request) {
-        
+
         try {
-            // Find AIPlanner agent
-            Agent aiPlannerAgent = agentRepository.findByAgentType(AgentType.AIPlanner);
-            if (aiPlannerAgent == null) {
-                log.error("No AIPlanner agent found in the system");
-                return Result.ofError(500, "No AIPlanner agent found in the system");
+            // Find the major agent
+            Agent majorAgent = agentRepository.findByAgentId(request.getMajorAgentId());
+            if (majorAgent == null) {
+                log.error("Major agent not found with ID: {}", request.getMajorAgentId());
+                return Result.ofError(404, "Major agent not found with ID: " + request.getMajorAgentId());
             }
-            
-            // Create a generic request with the AIPlanner agent
+
+            // Find all specified agents
+            Set<Agent> agents = new HashSet<>();
+            for (String agentId : request.getAgentIds()) {
+                Agent agent = agentRepository.findByAgentId(agentId);
+                if (agent == null) {
+                    log.error("Agent not found with ID: {}", agentId);
+                    return Result.ofError(404, "Agent not found with ID: " + agentId);
+                }
+                agents.add(agent);
+            }
+
+            // Create a generic request with the major agent
             CreateTaskRequest taskRequest = new CreateTaskRequest();
             taskRequest.setName(request.getName());
             taskRequest.setMasterPrompt(request.getMasterPrompt());
             taskRequest.setRootPrompt(request.getRootPrompt());
-            taskRequest.setAgentId(aiPlannerAgent.getAgentId());
-            
-            return createMasterNodeWithGoal(taskRequest);
-            
+            taskRequest.setAgentId(request.getMajorAgentId());
+
+            // Create the task with the major agent
+            Result<TaskResponse> result = createMasterNodeWithGoal(taskRequest);
+
+            if (result.isOk()) {
+                // Get the created TaskNodeMaster and set the agents
+                TaskNodeMaster masterNode = taskNodeMasterRepository.findById(result.getData().getMasterNodeId())
+                    .orElse(null);
+                if (masterNode != null) {
+                    masterNode.setAgents(agents);
+                    taskNodeMasterRepository.save(masterNode);
+                    log.info("Set {} agents to TaskNodeMaster with ID: {}", agents.size(), masterNode.getId());
+                }
+            }
+
+            return result;
+
         } catch (Exception e) {
             log.error("Error creating master node with AIPlanner goal", e);
             return Result.ofError(500, "Failed to create task with AIPlanner: " + e.getMessage());
@@ -76,37 +103,38 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Result<TaskResponse> createMasterNodeWithGoal(CreateTaskRequest request) {
         log.info("Creating master node with goal for conversation: {} with agent: {}", request.getAgentId());
-        
+
         try {
             String agentId = request.getAgentId();
-            
+
             // If no agent ID provided, find AIPlanner agent
             if (!StringUtils.hasText(agentId)) {
-                Agent aiPlannerAgent = agentRepository.findByAgentType(AgentType.AIPlanner);
+                Agent aiPlannerAgent = agentRepository.findByAgentType(AgentType.AIThinking);
                 if (aiPlannerAgent == null) {
                     log.error("No AIPlanner agent found in the system");
                     return Result.ofError(500, "No AIPlanner agent found in the system");
                 }
                 agentId = aiPlannerAgent.getAgentId();
             }
-            
+
             // Find the agent
             Agent agent = agentRepository.findByAgentId(agentId);
             if (agent == null) {
                 log.error("Agent not found with ID: {}", agentId);
                 return Result.ofError(404, "Agent not found with ID: " + agentId);
             }
-            
+
             // Create TaskNodeMaster
             TaskNodeMaster masterNode = new TaskNodeMaster();
             masterNode.setName(request.getName());
-            
+
             // Create root TaskNode
             TaskNode rootTaskNode = new TaskNode();
+            rootTaskNode.setName(request.getName());
             rootTaskNode.setPriority(1); // High priority for root tasks
             rootTaskNode.setPrompt(request.getRootPrompt());
             rootTaskNode.setTaskNodeMaster(masterNode);
-            
+
             // Create EngineGoal
             EngineGoal engineGoal = new EngineGoal();
             engineGoal.setName(request.getName());
@@ -114,28 +142,28 @@ public class TaskServiceImpl implements TaskService {
             engineGoal.setPriority(1);
             engineGoal.setStatus(EngineGoalStatus.PENDING);
             engineGoal.setTaskNode(rootTaskNode);
-            
+
             // Create EngineExecution
             EngineExecution engineExecution = new EngineExecution();
             engineExecution.setAgent(agent);
             engineExecution.setStatus(ExecutionStatus.STALLED);
             engineExecution.setGoal(engineGoal);
-            
+
             // Set up execution configuration
             engineExecution.setConfig(new HashMap<>());
-            
+
             // Establish relationships
             engineGoal.addExecution(engineExecution);
             rootTaskNode.getGoals().add(engineGoal);
             masterNode.setRootTaskNode(rootTaskNode);
             masterNode.addTaskNode(rootTaskNode);
-            
+
             // Save all entities
             TaskNodeMaster savedMasterNode = taskNodeMasterRepository.save(masterNode);
             TaskNode savedRootTaskNode = taskNodeRepository.save(rootTaskNode);
             EngineGoal savedEngineGoal = engineGoalRepository.save(engineGoal);
             EngineExecution savedEngineExecution = engineExecutionRepository.save(engineExecution);
-            
+
             // Create response
             TaskResponse response = TaskResponse.fromTaskNodeMaster(
                 savedMasterNode.getId(),
@@ -149,15 +177,41 @@ public class TaskServiceImpl implements TaskService {
                 agent.getAgentType().toString(),
                 savedMasterNode.getDateCreated()
             );
-            
-            log.info("Successfully created master node with goal. Master ID: {}, Root Task ID: {}, Goal ID: {}, Execution ID: {}", 
+
+            log.info("Successfully created master node with goal. Master ID: {}, Root Task ID: {}, Goal ID: {}, Execution ID: {}",
                     savedMasterNode.getId(), savedRootTaskNode.getId(), savedEngineGoal.getId(), savedEngineExecution.getId());
-            
+
             return Result.ofSuccess(response, "Task created successfully");
-            
+
         } catch (Exception e) {
             log.error("Error creating master node with goal", e);
             return Result.ofError(500, "Failed to create task: " + e.getMessage());
         }
     }
-} 
+
+    @Override
+    public Result<EngineGoal> addEngineGoalToTaskNode(TaskNode taskNode, EngineGoal engineGoal) {
+        log.info("Adding EngineGoal to TaskNode: {} with goal name: {}", taskNode.getId(), engineGoal.getName());
+
+        try {
+            // Set the relationship between EngineGoal and TaskNode
+            engineGoal.setTaskNode(taskNode);
+
+            // Add the goal to the task node's goals set
+            taskNode.getGoals().add(engineGoal);
+
+            // Save the EngineGoal
+            EngineGoal savedEngineGoal = engineGoalRepository.save(engineGoal);
+
+            // Save the updated TaskNode to persist the relationship
+            taskNodeRepository.save(taskNode);
+
+            log.info("Successfully added EngineGoal {} to TaskNode {}", savedEngineGoal.getId(), taskNode.getId());
+            return Result.ofSuccess(savedEngineGoal, "EngineGoal added successfully to TaskNode");
+
+        } catch (Exception e) {
+            log.error("Error adding EngineGoal to TaskNode", e);
+            return Result.ofError(500, "Failed to add EngineGoal to TaskNode: " + e.getMessage());
+        }
+    }
+}

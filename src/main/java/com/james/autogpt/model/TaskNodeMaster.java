@@ -8,18 +8,17 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.NamedEntityGraphs;
-import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedSubgraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.JoinTable;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -50,7 +49,7 @@ import lombok.EqualsAndHashCode;
                 }
             ),
             @NamedSubgraph(
-                name = "rootTask-with-goals", 
+                name = "rootTask-with-goals",
                 attributeNodes = {
                     @NamedAttributeNode("goals"),
                     @NamedAttributeNode("subTasks")

@@ -19,14 +19,16 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Represents a specific attempt by an Agent to achieve a Goal. An Execution
  * consists of a sequence of Tasks. This entity replaces the previous 'Process'
  * for tracking a specific run.
  */
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "engine_executions")
 public class EngineExecution extends EntityBase implements Serializable {
@@ -44,7 +46,7 @@ public class EngineExecution extends EntityBase implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "engine_goal_id", nullable = false)
 	private EngineGoal goal;
-	
+
 	@Fetch(FetchMode.JOIN)
 	@Basic(fetch = FetchType.EAGER)
 	@JdbcTypeCode(SqlTypes.JSON)

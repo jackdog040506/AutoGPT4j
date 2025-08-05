@@ -1,6 +1,5 @@
 package com.james.autogpt.repository;
 
-import java.util.Collection;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -26,17 +25,20 @@ public interface OpsTicketsJpaRepository extends JpaRepository<OpsTickets, Strin
 	Page<OpsTickets> findByTicketsTemplateId(String keyword, String ticketsTemplateId, Pageable pageable);
 
 	// Use EntityGraph instead of manual join fetch
+	@Override
 	@EntityGraph("OpsTickets.withTasks")
 	OpsTickets getReferenceById(String id);
 
-	// Use EntityGraph instead of manual join fetch  
+	// Use EntityGraph instead of manual join fetch
+	@Override
 	@EntityGraph("OpsTickets.withTasks")
 	Optional<OpsTickets> findById(String id);
-	
+
 	// Additional EntityGraph optimized methods
+	@Override
 	@EntityGraph("OpsTickets.withTasks")
 	Page<OpsTickets> findAll(Pageable pageable);
-	
+
 	@EntityGraph("OpsTickets.withTasks")
 	Optional<OpsTickets> findByIdAndTicketsTemplateId(String id, String ticketsTemplateId);
 

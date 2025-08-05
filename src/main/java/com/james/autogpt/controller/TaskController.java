@@ -27,20 +27,19 @@ public class TaskController {
 
     /**
      * Create a task with AIPlanner agent
-     * @param request The request containing conversation ID, name, and description
+     * @param request The request containing task name, prompts, major agent ID, and list of agent IDs
      * @return Result containing the created task information
      */
     @PostMapping("/ai-planner")
     public ResponseEntity<Result<TaskResponse>> createAIPlannerTask(
             @Valid @RequestBody CreateAIPlannerTaskRequest request) {
-        
+
         Result<TaskResponse> result = taskService.createMasterNodeWithAIPlannerGoal(request);
-        
+
         if (result.isOk()) {
             return ResponseEntity.ok(result);
-        } else {
-            return ResponseEntity.status(result.getCode()).body(result);
         }
+		return ResponseEntity.status(result.getCode()).body(result);
     }
 
 //    /**
@@ -52,13 +51,13 @@ public class TaskController {
 //    public ResponseEntity<Result<TaskResponse>> createTask(
 //            @Valid @RequestBody CreateTaskRequest request) {
 //        log.info("Received request to create task: {}", request.getConversationId());
-//        
+//
 //        Result<TaskResponse> result = taskService.createMasterNodeWithGoal(request);
-//        
+//
 //        if (result.isOk()) {
 //            return ResponseEntity.ok(result);
 //        } else {
 //            return ResponseEntity.status(result.getCode()).body(result);
 //        }
 //    }
-} 
+}

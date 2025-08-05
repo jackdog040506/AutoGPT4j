@@ -4,15 +4,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.NamedEntityGraphs;
-import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedSubgraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
@@ -23,55 +22,35 @@ import lombok.EqualsAndHashCode;
 @Entity
 @Table(name = "task_node")
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = { "subTasks", "goals", "parentTask", "taskNodeMaster" })
 @NamedEntityGraphs({
-    @NamedEntityGraph(
-        name = "TaskNode.withSubTasks",
-        attributeNodes = {
-            @NamedAttributeNode("subTasks"),
-            @NamedAttributeNode("parentTask")
-        }
-    ),
-    @NamedEntityGraph(
-        name = "TaskNode.withGoals",
-        attributeNodes = {
-            @NamedAttributeNode(value = "goals", subgraph = "goals-subgraph")
-        },
-        subgraphs = {
-            @NamedSubgraph(
-                name = "goals-subgraph",
-                attributeNodes = {
-                    @NamedAttributeNode("executions")
-                }
-            )
-        }
-    ),
-    @NamedEntityGraph(
-        name = "TaskNode.complete",
-        attributeNodes = {
-            @NamedAttributeNode("subTasks"),
-            @NamedAttributeNode("parentTask"),
-            @NamedAttributeNode(value = "goals", subgraph = "goals-with-executions"),
-            @NamedAttributeNode("taskNodeMaster")
-        },
-        subgraphs = {
-            @NamedSubgraph(
-                name = "goals-with-executions",
-                attributeNodes = {
-                    @NamedAttributeNode(value = "executions", subgraph = "executions-with-agent")
-                }
-            ),
-            @NamedSubgraph(
-                name = "executions-with-agent",
-                attributeNodes = {
-                    @NamedAttributeNode("agent")
-                }
-            )
-        }
-    )
+        @NamedEntityGraph(name = "TaskNode.withSubTasks", attributeNodes = {
+                @NamedAttributeNode("subTasks"),
+                @NamedAttributeNode("parentTask")
+        }),
+        @NamedEntityGraph(name = "TaskNode.withGoals", attributeNodes = {
+                @NamedAttributeNode(value = "goals", subgraph = "goals-subgraph")
+        }, subgraphs = {
+                @NamedSubgraph(name = "goals-subgraph", attributeNodes = {
+                        @NamedAttributeNode("executions")
+                })
+        }),
+        @NamedEntityGraph(name = "TaskNode.complete", attributeNodes = {
+                @NamedAttributeNode("subTasks"),
+                @NamedAttributeNode("parentTask"),
+                @NamedAttributeNode(value = "goals", subgraph = "goals-with-executions"),
+                @NamedAttributeNode("taskNodeMaster")
+        }, subgraphs = {
+                @NamedSubgraph(name = "goals-with-executions", attributeNodes = {
+                        @NamedAttributeNode(value = "executions", subgraph = "executions-with-agent")
+                }),
+                @NamedSubgraph(name = "executions-with-agent", attributeNodes = {
+                        @NamedAttributeNode("agent")
+                })
+        })
 })
 public class TaskNode extends EntityBase {
-    
+
     @Column(nullable = false)
     private String name;
 
@@ -108,17 +87,17 @@ public class TaskNode extends EntityBase {
     private String conversationId; // Leading conversation ID
 
     @PrePersist
-	public void onPrePersist() {
-		if (this.conversationId == null) {
-			setConversationId(UUID.randomUUID().toString());
-		}
-	}
+    public void onPrePersist() {
+        if (this.conversationId == null) {
+            setConversationId(UUID.randomUUID().toString());
+        }
+    }
     // public enum TaskStatus {
-    //     PENDING,
-    //     IN_PROGRESS,
-    //     COMPLETED,
-    //     FAILED,
-    //     CANCELLED,
-    //     BLOCKED
+    // PENDING,
+    // IN_PROGRESS,
+    // COMPLETED,
+    // FAILED,
+    // CANCELLED,
+    // BLOCKED
     // }
-} 
+}

@@ -1,10 +1,16 @@
 package com.james.autogpt.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.james.autogpt.dto.Result;
 import com.james.autogpt.service.EngineService;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
 /**
  * REST controller for managing the AI agent execution engine
@@ -14,10 +20,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/engine")
 public class EngineController {
-    
+
     @Autowired
     private EngineService engineService;
-    
+
     /**
      * Get engine status
      */
@@ -26,7 +32,7 @@ public class EngineController {
         log.debug("Getting engine status");
         return engineService.getEngineStatus();
     }
-    
+
     /**
      * Queue a specific execution for processing
      */
@@ -35,7 +41,7 @@ public class EngineController {
         log.info("Queueing execution: {}", executionId);
         return engineService.queueExecution(executionId);
     }
-    
+
     /**
      * Queue all pending executions
      */
@@ -44,7 +50,7 @@ public class EngineController {
     //     log.info("Queueing all pending executions");
     //     return engineService.queueAllPendingExecutions();
     // }
-    
+
     /**
      * Restart the engine
      */
@@ -53,4 +59,4 @@ public class EngineController {
         log.info("Restarting engine via API");
         return engineService.restartEngine();
     }
-} 
+}
